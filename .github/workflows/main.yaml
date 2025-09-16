@@ -1,22 +1,31 @@
+name: Build and Test
+
 on:
   pull_request:
     branches:
-    - develop
+      - develop
   workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - name: Setup dotnet
-      uses: actions/setup-dotnet@v5
-      with:
-        dotnet-version: |
-          9.0.x
-    - name: restore
-      run: dotnet restore src/Presentation/Nop.Web/Nop.Web.csproj
-    - name: build
-      run: dotnet build --configuration Debug src/Presentation/Nop.Web/Nop.Web.csproj
-    - name: test
-      run: dotnet test src/Tests/Nop.Tests/Nop.Tests.csproj
-    - name: publish
-      run: dotnet publish --configuration Release src/Presentation/Nop.Web/Nop.Web.csproj -o published/
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore src/Presentation/Nop.Web/Nop.Web.csproj
+
+      - name: Build
+        run: dotnet build --configuration Debug src/Presentation/Nop.Web/Nop.Web.csproj
+
+      - name: Test
+        run: dotnet test src/Tests/Nop.Tests/Nop.Tests.csproj
+
+      - name: Publish
+        run: dotnet publish --configuration Release src/Presentation/Nop.Web/Nop.Web.csproj -o published/
