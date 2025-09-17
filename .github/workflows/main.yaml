@@ -58,7 +58,7 @@ jobs:
       - name: Zip the HTML report
         run: |
           cd TestResults
-          zip -r "${ARTIFACT_NAME}.zip" Report
+          zip -r nopCommerce-12.zip . -i Report
 
       - name: Upload zipped HTML test report
         uses: actions/upload-artifact@v4
