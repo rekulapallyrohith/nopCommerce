@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Setup dotnet
+      - name: Setup .NET
         uses: actions/setup-dotnet@v5
         with:
           dotnet-version: |
@@ -27,19 +27,27 @@ jobs:
       - name: Run tests and generate .trx report
         run: dotnet test src/Tests/Nop.Tests/Nop.Tests.csproj --logger "trx;LogFileName=test-results.trx" --results-directory TestResults
 
-      - name: Install ReportGenerator
-        run: dotnet tool install --global dotnet-reportgenerator-globaltool
+      # -------------------------------
+      # JUNIT REPORT GENERATION
+      # -------------------------------
+      - name: Install trx2junit
+        run: dotnet tool install --global trx2junit
 
-      - name: Add dotnet tools to PATH
+      - name: Add dotnet tools to PATH (trx2junit)
         run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
 
-      - name: Generate HTML report from .trx
+      - name: Convert .trx to JUnit format
         run: |
-          reportgenerator \
-            "-reports:TestResults/*.trx" \
-            "-targetdir:TestResults/Report" \
-            "-reporttypes:Html"
+          trx2junit TestResults/*.trx
 
+      - name: Upload JUnit test report
+        uses: actions/upload-artifact@v3
+        with:
+          name: junit-test-report
+          path: TestResults/*.xml
+      # -------------------------------
+      # ZIP + CUSTOM ARTIFACT NAME
+      # -------------------------------
       - name: Set artifact name variables
         id: vars
         run: |
@@ -53,10 +61,13 @@ jobs:
           zip -r "${ARTIFACT_NAME}.zip" Report
 
       - name: Upload zipped HTML test report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: ${{ env.ARTIFACT_NAME }}
           path: TestResults/${{ env.ARTIFACT_NAME }}.zip
 
+      # -------------------------------
+      # PUBLISH STEP
+      # -------------------------------
       - name: Publish project
-        run: dotnet publish --configuration Release src/Presentation/Nop.Web/Nop.Web.csproj -o published/
+        run: dotnet publish --configuration Release src/Presentation/Nop.Web/Nop.Web.csproj --output published
