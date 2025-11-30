@@ -1,6 +1,6 @@
 name: dotnet build
 on:
-    push:
+    pull_request: 
         branches:
             - develop
     workflow_dispatch:
