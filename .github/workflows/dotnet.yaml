@@ -20,6 +20,4 @@ jobs:
             - name: Test
               run: dotnet test src/Tests/Nop.Tests/Nop.Tests.csproj
             - name: Publish .NET Package
-              uses: yashmahi88/publish-.net@v1
-              with:
-                  dotnet-version: "9.0.x"
+              run: dotnet publish --configuration Release src/Presentation/Nop.Web/Nop.Web.csproj
