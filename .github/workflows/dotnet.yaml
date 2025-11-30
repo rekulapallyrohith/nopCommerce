@@ -16,8 +16,8 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v5
             - name: Build .NET
-              run: dotnet build --configuration Release [src/Presentation/Nop.Web/Nop.Web.csproj]
+              run: dotnet build --configuration Release src/Presentation/Nop.Web/Nop.Web.csproj
             - name: Test
-              run: dotnet test [src/Tests/Nop.Tests/Nop.Tests.csproj]
+              run: dotnet test src/Tests/Nop.Tests/Nop.Tests.csproj
             - name: Publish .NET Package
-              run: dotnet publish --configuration Release [src/Presentation/Nop.Web/Nop.Web.csproj] -o published/
+              run: dotnet publish --configuration Release src/Presentation/Nop.Web/Nop.Web.csproj -o published/
