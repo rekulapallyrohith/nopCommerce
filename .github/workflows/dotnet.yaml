@@ -20,4 +20,4 @@ jobs:
             - name: Test
               run: dotnet test src/Tests/Nop.Tests/Nop.Tests.csproj
             - name: Publish .NET Package
-              run: dotnet publish --configuration Release src/Presentation/Nop.Web/Nop.Web.csproj
+              run: dotnet publish --configuration Release src/Presentation/Nop.Web/Nop.Web.csproj --output published
