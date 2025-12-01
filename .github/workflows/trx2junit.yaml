@@ -52,11 +52,11 @@ jobs:
                   echo "ARTIFACT_NAME=${{github.event.repository.name}}-${{github.run_number}}" >> $GITHUB_ENV
             - name: Zip Test Results
               run: |
-                  zip -r "${{env.ARTIFACT_NAME}}.zip" ./TestResults
+                  zip -r "${{env.ARTIFACT_NAME}}.zip" /TestResults
             - name: Publish Test Results to GitHub UI
               uses: EnricoMi/publish-unit-test-result-action@v2
               with:
-                  files: ./TestResults/test-results.xml  # <-- Corrected path
+                  files: /TestResults/test-results.xml  # <-- Corrected path
 
             - name: Publish .NET Package
               run: dotnet publish --configuration Release src/Presentation/Nop.Web/Nop.Web.csproj -o published/
