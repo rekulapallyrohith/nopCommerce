@@ -7,6 +7,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        language: [csharp]
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -29,7 +32,7 @@ jobs:
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
-          languages: csharp
+          languages: ${{matrix.language}}
       - name: Build .NET
         run: dotnet build --configuration Release src/Presentation/Nop.Web/Nop.Web.csproj
       - name: Perform CodeQL Analysis

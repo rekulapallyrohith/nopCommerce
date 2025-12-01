@@ -1,0 +1,71 @@
+name: .trt to HTML
+on:
+    push:
+        branches:
+            - develop
+    workflow_dispatch:
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                language: [csharp]
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v5
+            - name: Cache NuGet packages
+              uses: actions/cache@v4
+              with:
+                  path: ~/.nuget/packages
+                  key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+                  restore-keys: |
+                      ${{ runner.os }}-nuget-
+            - name: Cache .NET build output
+              uses: actions/cache@v4
+              with:
+                  path: |
+                      **/bin
+                      **/obj
+                  key: ${{ runner.os }}-dotnet-build-${{ hashFiles('**/*.csproj') }}
+                  restore-keys: |
+                      ${{ runner.os }}-dotnet-build-
+            - name: Initialize CodeQL
+              uses: github/codeql-action/init@v3
+              with:
+                  languages: ${{matrix.language}}
+            - name: Build .NET
+              run: dotnet build --configuration Release src/Presentation/Nop.Web/Nop.Web.csproj
+            - name: Perform CodeQL Analysis
+              uses: github/codeql-action/analyze@v3
+            - name: Test
+              run: dotnet test --no-build --no-restore --logger "trx;LogFileName=test-results.trx" src/Tests/Nop.Tests/Nop.Tests.csproj --results-directory ./TestResults
+            - name: Install trx2junit
+              run: dotnet tool install --global trx2junit
+
+            - name: Add dotnet tools to PATH
+              run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+
+            - name: Convert TRX to JUnit
+              run: trx2junit ./TestResults/*.trx
+
+            - name: Set artifact name variables
+              id: vars
+              run: |
+                  echo "REPO_NAME=${{github.event.repository.name}}" >> $GITHUB_ENV
+                  echo "BUILD_NUMBER=${{github.run_number}}" >> $GITHUB_ENV
+                  echo "ARTIFACT_NAME=${{github.event.repository.name}}-${{github.run_number}}" >> $GITHUB_ENV
+            - name: Zip Test Results
+              run: |
+                  zip -r "${{env.ARTIFACT_NAME}}.zip" ./TestResults
+            - name: Publish Test Results (JUnit)
+              uses: actions/upload-artifact@v4
+              with:
+                  name: junit-results
+                  path: ./TestResults/*.xml
+            - name: Display Test Results in GitHub UI
+              uses: test-summary/action@v2
+              with:
+                  paths: "./TestResults/*.xml"
+
+            - name: Publish .NET Package
+              run: dotnet publish --configuration Release src/Presentation/Nop.Web/Nop.Web.csproj -o published/
