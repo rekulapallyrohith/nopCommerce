@@ -37,13 +37,12 @@ jobs:
               run: dotnet build --configuration Release src/Presentation/Nop.Web/Nop.Web.csproj
             # - name: Perform CodeQL Analysis
             #   uses: github/codeql-action/analyze@v3
-            - name: Test with JUnit Output
-              run: dotnet test \
-                  src/Tests/Nop.Tests/Nop.Tests.csproj \
-                  --results-directory ./TestResults \
-                  -- \
-                  --test-adapter-path "src/Tests/Nop.Tests/bin/Debug/net9.0" \
-                  --logger "nunitxml;LogFileName=test-results.xml"
+            - name: Test with JUnit Output (MSBuild Properties)
+              run: |
+                dotnet test src/Tests/Nop.Tests/Nop.Tests.csproj \
+                  /p:Configuration=Debug \
+                  /p:VSTestResultsDirectory="./TestResults" \
+                  /p:Logger="nunitxml;LogFileName=test-results.xml"
 
             - name: Set artifact name variables
               id: vars
