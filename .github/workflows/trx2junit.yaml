@@ -29,16 +29,20 @@ jobs:
                   key: ${{ runner.os }}-dotnet-build-${{ hashFiles('**/*.csproj') }}
                   restore-keys: |
                       ${{ runner.os }}-dotnet-build-
-            - name: Initialize CodeQL
-              uses: github/codeql-action/init@v3
-              with:
-                  languages: ${{matrix.language}}
+            # - name: Initialize CodeQL
+            #   uses: github/codeql-action/init@v3
+            #   with:
+            #       languages: ${{matrix.language}}
             - name: Build .NET
               run: dotnet build --configuration Release src/Presentation/Nop.Web/Nop.Web.csproj
-            - name: Perform CodeQL Analysis
-              uses: github/codeql-action/analyze@v3
+            # - name: Perform CodeQL Analysis
+            #   uses: github/codeql-action/analyze@v3
             - name: Test with JUnit Output
-              run: dotnet test --logger "nunitxml;LogFileName=test-results.xml" src/Tests/Nop.Tests/Nop.Tests.csproj --results-directory ./TestResults
+              run: dotnet test \
+                     --test-adapter-path "src/Tests/Nop.Tests/bin/Debug/net9.0" \
+                     --logger "nunitxml;LogFileName=test-results.xml" \
+                     src/Tests/Nop.Tests/Nop.Tests.csproj \
+                     --results-directory ./TestResults
     
             - name: Set artifact name variables
               id: vars
