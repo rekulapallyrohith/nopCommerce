@@ -50,9 +50,11 @@ jobs:
                   echo "REPO_NAME=${{github.event.repository.name}}" >> $GITHUB_ENV
                   echo "BUILD_NUMBER=${{github.run_number}}" >> $GITHUB_ENV
                   echo "ARTIFACT_NAME=${{github.event.repository.name}}-${{github.run_number}}" >> $GITHUB_ENV
-            - name: Zip Test Results
+            - name: Zip Test Results (Robust Path)
+              # Create an empty zip file using the dot '.', then explicitly include the directory contents
+              # This often resolves CI environment path lookup issues
               run: |
-                  zip -r "${{env.ARTIFACT_NAME}}.zip" ./TestResults
+                  zip -r "${{env.ARTIFACT_NAME}}.zip" . -i "TestResults/*"
             - name: Publish Test Results to GitHub UI
               uses: EnricoMi/publish-unit-test-result-action@v2
               with:
