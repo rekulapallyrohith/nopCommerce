@@ -37,17 +37,9 @@ jobs:
               run: dotnet build --configuration Release src/Presentation/Nop.Web/Nop.Web.csproj
             - name: Perform CodeQL Analysis
               uses: github/codeql-action/analyze@v3
-            - name: Test
-              run: dotnet test --no-build --no-restore --logger "trx;LogFileName=test-results.trx" src/Tests/Nop.Tests/Nop.Tests.csproj --results-directory ./TestResults
-            - name: Install ReportGenerator
-              run: dotnet tool install -g dotnet-reportgenerator-globaltool
-            - name: Convert TRX to JUnit XML
-              run: |
-                  reportgenerator \
-                    "-reports:./TestResults/*.trx" \
-                    "-targetdir:TestResults/junit" \
-                    "-reporttypes:JUnit"
-
+            - name: Test with JUnit Output
+              run: dotnet test --logger "junit;LogFileName=test-results.xml" --no-restore --no-build src/Tests/Nop.Tests/Nop.Tests.csproj --results-directory ./TestResults
+    
             - name: Set artifact name variables
               id: vars
               run: |
