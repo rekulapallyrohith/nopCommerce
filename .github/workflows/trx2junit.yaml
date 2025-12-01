@@ -38,7 +38,7 @@ jobs:
             - name: Perform CodeQL Analysis
               uses: github/codeql-action/analyze@v3
             - name: Test with JUnit Output
-              run: dotnet test --logger "nunit;LogFileName=test-results.xml" --no-restore --no-build src/Tests/Nop.Tests/Nop.Tests.csproj --results-directory ./TestResults
+              run: dotnet test --logger "nunitxml;LogFileName=test-results.xml" --no-restore --no-build src/Tests/Nop.Tests/Nop.Tests.csproj --results-directory ./TestResults
     
             - name: Set artifact name variables
               id: vars
@@ -52,7 +52,7 @@ jobs:
             - name: Publish Test Results to GitHub UI
               uses: EnricoMi/publish-unit-test-result-action@v2
               with:
-                  files: TestResults/junit/*.xml
+                  files: ./TestResults/junit/*.xml
 
             - name: Publish .NET Package
               run: dotnet publish --configuration Release src/Presentation/Nop.Web/Nop.Web.csproj -o published/
