@@ -39,11 +39,12 @@ jobs:
             #   uses: github/codeql-action/analyze@v3
             - name: Test with JUnit Output
               run: dotnet test \
-                     --test-adapter-path "src/Tests/Nop.Tests/bin/Debug/net9.0" \
-                     --logger "nunitxml;LogFileName=test-results.xml" \
-                     src/Tests/Nop.Tests/Nop.Tests.csproj \
-                     --results-directory ./TestResults
-    
+                  src/Tests/Nop.Tests/Nop.Tests.csproj \
+                  --results-directory ./TestResults \
+                  -- \
+                  /p:TestAdapterPath="src/Tests/Nop.Tests/bin/Debug/net9.0" \
+                  /p:Logger="nunitxml;LogFileName=test-results.xml"
+
             - name: Set artifact name variables
               id: vars
               run: |
