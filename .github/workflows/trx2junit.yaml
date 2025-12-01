@@ -52,7 +52,7 @@ jobs:
                   echo "ARTIFACT_NAME=${{github.event.repository.name}}-${{github.run_number}}" >> $GITHUB_ENV
             - name: Zip Test Results
               run: |
-                  zip -r "${{env.ARTIFACT_NAME}}.zip" . -i /TestResults
+                  zip -r "${{env.ARTIFACT_NAME}}.zip" ./TestResults
             - name: Publish Test Results to GitHub UI
               uses: EnricoMi/publish-unit-test-result-action@v2
               with:
