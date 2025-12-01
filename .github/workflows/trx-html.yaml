@@ -17,12 +17,23 @@ jobs:
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
           restore-keys: |
             ${{ runner.os }}-nuget-
+      - name: Cache .NET build output
+        uses: actions/cache@v4
+        with:
+          path: |
+            **/bin
+            **/obj
+          key: ${{ runner.os }}-dotnet-build-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-dotnet-build-
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
-            languages: csharp
+          languages: csharp
       - name: Build .NET
         run: dotnet build --configuration Release src/Presentation/Nop.Web/Nop.Web.csproj
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
       - name: Test
         run: dotnet test --logger "trx;LogFileName=test-results.trx" src/Tests/Nop.Tests/Nop.Tests.csproj --results-directory ./TestResults
       - name: Install ReportGenerator
