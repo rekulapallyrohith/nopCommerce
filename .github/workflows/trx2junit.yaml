@@ -39,14 +39,14 @@ jobs:
               uses: github/codeql-action/analyze@v3
             - name: Test
               run: dotnet test --no-build --no-restore --logger "trx;LogFileName=test-results.trx" src/Tests/Nop.Tests/Nop.Tests.csproj --results-directory ./TestResults
-            - name: Install trx2junit
-              run: dotnet tool install --global trx2junit
-
-            - name: Add dotnet tools to PATH
-              run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
-
-            - name: Convert TRX to JUnit
-              run: trx2junit ./TestResults/*.trx
+            - name: Install ReportGenerator
+              run: dotnet tool install -g dotnet-reportgenerator-globaltool
+            - name: Convert TRX to JUnit XML
+              run: |
+                  reportgenerator \
+                    "-reports:./TestResults/*.trx" \
+                    "-targetdir:TestResults/junit" \
+                    "-reporttypes:JUnit"
 
             - name: Set artifact name variables
               id: vars
@@ -57,15 +57,10 @@ jobs:
             - name: Zip Test Results
               run: |
                   zip -r "${{env.ARTIFACT_NAME}}.zip" ./TestResults
-            - name: Publish Test Results (JUnit)
-              uses: actions/upload-artifact@v4
+            - name: Publish Test Results to GitHub UI
+              uses: EnricoMi/publish-unit-test-result-action@v2
               with:
-                  name: junit-results
-                  path: ./TestResults/*.xml
-            - name: Display Test Results in GitHub UI
-              uses: test-summary/action@v2
-              with:
-                  paths: "./TestResults/*.xml"
+                  files: TestResults/junit/*.xml
 
             - name: Publish .NET Package
               run: dotnet publish --configuration Release src/Presentation/Nop.Web/Nop.Web.csproj -o published/
