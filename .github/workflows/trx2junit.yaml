@@ -42,8 +42,8 @@ jobs:
                   src/Tests/Nop.Tests/Nop.Tests.csproj \
                   --results-directory ./TestResults \
                   -- \
-                  /p:TestAdapterPath="src/Tests/Nop.Tests/bin/Debug/net9.0" \
-                  /p:Logger="nunitxml;LogFileName=test-results.xml"
+                  --test-adapter-path "src/Tests/Nop.Tests/bin/Debug/net9.0" \
+                  --logger "nunitxml;LogFileName=test-results.xml"
 
             - name: Set artifact name variables
               id: vars
@@ -57,7 +57,7 @@ jobs:
             - name: Publish Test Results to GitHub UI
               uses: EnricoMi/publish-unit-test-result-action@v2
               with:
-                  files: ./TestResults/junit/*.xml
+                  files: ./TestResults/test-results.xml  # <-- Corrected path
 
             - name: Publish .NET Package
               run: dotnet publish --configuration Release src/Presentation/Nop.Web/Nop.Web.csproj -o published/
