@@ -53,7 +53,7 @@ jobs:
               # Create an empty zip file using the dot '.', then explicitly include the directory contents
               # This often resolves CI environment path lookup issues
               run: |
-                  zip -r "${{env.ARTIFACT_NAME}}.zip" . -i "TestResults/*"
+                  zip -r "${{env.ARTIFACT_NAME}}.zip" . -i "TestResults/*.xml"
             - name: Publish Test Results to GitHub UI
               uses: EnricoMi/publish-unit-test-result-action@v2
               with:
