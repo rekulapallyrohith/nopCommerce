@@ -39,10 +39,13 @@ jobs:
             #   uses: github/codeql-action/analyze@v3
             - name: Test with JUnit Output (MSBuild Properties)
               run: |
-                dotnet test src/Tests/Nop.Tests/Nop.Tests.csproj \
-                  /p:VSTestResultsDirectory=./TestResults \
-                  /p:Logger="nunitxml;LogFileName=test-results.xml"
-
+                  dotnet test src/Tests/Nop.Tests/Nop.Tests.csproj \
+                    /p:VSTestResultsDirectory=./TestResults \
+                    /p:Logger="nunitxml;LogFileName=test-results.xml"
+            - name: Debug list test results
+              run: |
+                  echo "Searching for XML..."
+                  find . -name "*.xml" -print
             - name: Set artifact name variables
               id: vars
               run: |
@@ -57,7 +60,7 @@ jobs:
             - name: Publish Test Results to GitHub UI
               uses: EnricoMi/publish-unit-test-result-action@v2
               with:
-                  files: ./TestResults/test-results.xml  # <-- Corrected path
+                  files: ./TestResults/test-results.xml # <-- Corrected path
 
             - name: Publish .NET Package
               run: dotnet publish --configuration Release src/Presentation/Nop.Web/Nop.Web.csproj -o published/
