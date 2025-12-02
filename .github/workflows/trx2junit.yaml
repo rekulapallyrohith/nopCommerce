@@ -40,8 +40,7 @@ jobs:
             - name: Test with JUnit Output (MSBuild Properties)
               run: |
                 dotnet test src/Tests/Nop.Tests/Nop.Tests.csproj \
-                  /p:Configuration=Debug \
-                  /p:VSTestResultsDirectory="./TestResults" \
+                  /p:VSTestResultsDirectory=./TestResults \
                   /p:Logger="nunitxml;LogFileName=test-results.xml"
 
             - name: Set artifact name variables
